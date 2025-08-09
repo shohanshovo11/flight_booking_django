@@ -23,7 +23,6 @@ media/
 
 # Static files
 staticfiles/
-static/
 collected_static/
 
 # VSCode settings
