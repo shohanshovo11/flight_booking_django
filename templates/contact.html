@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Trip{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold">Let's Talk</h1>
+    <p class="lead text-muted">We're here to help you with any questions or concerns you may have.</p>
+  </div>
+
+  <div class="row g-5">
+    <!-- Contact Form -->
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <h3 class="mb-4">Send us a Message</h3>
+
+          {% if success %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label">Full Name *</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email Address *</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone">
+              </div>
+              <div class="col-md-6">
+                <label for="subject" class="form-label">Subject *</label>
+                <select class="form-control" id="subject" name="subject" required>
+                  <option value="">Select a subject</option>
+                  <option value="booking">Booking Inquiry</option>
+                  <option value="support">Technical Support</option>
+                  <option value="feedback">Feedback</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label for="message" class="form-label">Message *</label>
+                <textarea class="form-control" id="message" name="message" rows="6"
+                  placeholder="Tell us how we can help you..." required></textarea>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="newsletter">
+                  <label class="form-check-label" for="newsletter">
+                    Subscribe to our newsletter for travel deals and updates
+                  </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                  <i class="fas fa-paper-plane me-2"></i>Send Message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="col-lg-4">
+      <div class="card shadow-lg border-0 h-100">
+        <div class="card-body p-5">
+          <h3 class="mb-4">Get in Touch</h3>
+
+          <div class="contact-info">
+            <div class="contact-item mb-4">
+              <div class="d-flex align-items-center">
+                <div class="contact-icon">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="mb-1">Address</h6>
+                  <p class="text-muted mb-0">123 Travel Street<br>Adventure City, AC 12345</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="contact-item mb-4">
+              <div class="d-flex align-items-center">
+                <div class="contact-icon">
+                  <i class="fas fa-phone"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="mb-1">Phone</h6>
+                  <p class="text-muted mb-0">+1 (555) 123-4567</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="contact-item mb-4">
+              <div class="d-flex align-items-center">
+                <div class="contact-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="mb-1">Email</h6>
+                  <p class="text-muted mb-0">support@trip.com</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="contact-item mb-4">
+              <div class="d-flex align-items-center">
+                <div class="contact-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="mb-1">Business Hours</h6>
+                  <p class="text-muted mb-0">Mon - Fri: 9:00 AM - 6:00 PM<br>Sat - Sun: 10:00 AM - 4:00 PM</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="social-links">
+            <h6 class="mb-3">Follow Us</h6>
+            <div class="d-flex gap-3">
+              <a href="#" class="social-link">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" class="social-link">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" class="social-link">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="#" class="social-link">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <h3 class="mb-4 text-center">Frequently Asked Questions</h3>
+
+          <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="faq1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                  How can I change or cancel my booking?
+                </button>
+              </h2>
+              <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  You can change or cancel your booking through your dashboard. Go to "My Bookings" and select the
+                  booking you want to modify. Please note that cancellation policies vary by airline.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="faq2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapse2">
+                  What payment methods do you accept?
+                </button>
+              </h2>
+              <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  We accept all major credit cards (Visa, MasterCard, American Express), debit cards, PayPal, and bank
+                  transfers for your convenience.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="faq3">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapse3">
+                  How early should I arrive at the airport?
+                </button>
+              </h2>
+              <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  We recommend arriving at least 2 hours before domestic flights and 3 hours before international
+                  flights. Always check with your airline for specific requirements.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .contact-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+  }
+
+  .social-link {
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .social-link:hover {
+    background-color: var(--secondary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .card {
+    border-radius: 15px;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+  }
+
+  .btn {
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .accordion-button {
+    border-radius: 8px !important;
+    font-weight: 500;
+  }
+
+  .accordion-button:not(.collapsed) {
+    color: var(--primary-color);
+    background-color: rgba(99, 102, 241, 0.1);
+  }
+</style>
+{% endblock %}

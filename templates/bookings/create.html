@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Flight - Trip{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <!-- Flight Summary -->
+    <div class="col-md-4">
+      <div class="card shadow-sm position-sticky" style="top: 20px;">
+        <div class="card-header">
+          <h5 class="mb-0">Flight Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="flight-info">
+            <div class="d-flex align-items-center mb-3">
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                style="width: 40px; height: 40px;">
+                <i class="fas fa-plane"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0">{{ flight.airline.code }}{{ flight.flight_number }}</h6>
+                <small class="text-muted">{{ flight.airline.name }}</small>
+              </div>
+            </div>
+
+            <div class="route-info mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="fw-bold mb-0">{{ flight.departure_airport.code }}</h5>
+                  <small class="text-muted">{{ flight.departure_airport.city }}</small>
+                </div>
+                <div class="text-center">
+                  <i class="fas fa-arrow-right text-primary"></i>
+                </div>
+                <div class="text-end">
+                  <h5 class="fw-bold mb-0">{{ flight.arrival_airport.code }}</h5>
+                  <small class="text-muted">{{ flight.arrival_airport.city }}</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="time-info mb-3">
+              <div class="row">
+                <div class="col-6">
+                  <small class="text-muted">Departure</small>
+                  <p class="fw-bold mb-0">{{ flight.departure_time|date:"M d, Y" }}</p>
+                  <p class="text-primary mb-0">{{ flight.departure_time|time:"H:i" }}</p>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted">Arrival</small>
+                  <p class="fw-bold mb-0">{{ flight.arrival_time|date:"M d, Y" }}</p>
+                  <p class="text-primary mb-0">{{ flight.arrival_time|time:"H:i" }}</p>
+                </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="pricing-info">
+              <h6 class="mb-3">Select Class</h6>
+              {% for seat_class in seat_classes %}
+              <div class="form-check mb-2">
+                <input class="form-check-input seat-class-radio" type="radio" name="seat_class"
+                  id="class_{{ seat_class.id }}" value="{{ seat_class.id }}" data-price="{{ seat_class.get_price }}"
+                  {% if forloop.first %}checked{% endif %}>
+                <label class="form-check-label d-flex justify-content-between w-100" for="class_{{ seat_class.id }}">
+                  <span>{{ seat_class.get_class_type_display }}</span>
+                  <strong class="text-primary">${{ seat_class.get_price }}</strong>
+                </label>
+                <small class="text-muted">{{ seat_class.baggage_allowance }}kg baggage included</small>
+              </div>
+              {% endfor %}
+
+              <hr>
+
+              <div class="price-breakdown">
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Base Fare</span>
+                  <span id="baseFare">${{ flight.base_price }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Taxes & Fees</span>
+                  <span>$121</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Baggage</span>
+                  <span id="baggageFee">$0</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                  <span>Total</span>
+                  <span id="totalPrice" class="text-primary">${{ flight.base_price|add:121 }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5 class="mb-0">Passenger Information</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" id="bookingForm">
+            {% csrf_token %}
+            {{ form.seat_class.as_hidden }}
+
+            <!-- Passenger Details -->
+            <div class="passenger-section mb-4">
+              <h6 class="mb-3">Primary Passenger</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">First Name *</label>
+                  <input type="text" class="form-control" name="passenger_first_name" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Last Name *</label>
+                  <input type="text" class="form-control" name="passenger_last_name" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Date of Birth *</label>
+                  <input type="date" class="form-control" name="passenger_dob" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Gender *</label>
+                  <select class="form-control" name="passenger_gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Passport Number</label>
+                  <input type="text" class="form-control" name="passenger_passport">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Nationality *</label>
+                  <input type="text" class="form-control" name="passenger_nationality" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Passengers -->
+            <div id="additionalPassengers">
+              <!-- Additional passenger forms will be added here -->
+            </div>
+
+            <div class="mb-4">
+              <button type="button" class="btn btn-outline-primary" onclick="addPassenger()">
+                <i class="fas fa-plus me-2"></i>Add Another Passenger
+              </button>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="emergency-section mb-4">
+              <h6 class="mb-3">Emergency Contact</h6>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="sameAsPassenger">
+                <label class="form-check-label" for="sameAsPassenger">
+                  Same as primary passenger
+                </label>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Contact Name *</label>
+                  <input type="text" class="form-control" name="emergency_name" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Contact Phone *</label>
+                  <input type="tel" class="form-control" name="emergency_phone" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Contact Email *</label>
+                  <input type="email" class="form-control" name="emergency_email" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Baggage Options -->
+            <div class="baggage-section mb-4">
+              <h6 class="mb-3">Baggage Options</h6>
+              <div class="card border">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>Additional Checked Bag</strong>
+                      <p class="text-muted mb-0">23kg (50 lbs)</p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <button type="button" class="btn btn-outline-secondary btn-sm"
+                        onclick="changeBagQuantity(-1)">-</button>
+                      <span class="mx-3" id="bagQuantity">0</span>
+                      <button type="button" class="btn btn-outline-secondary btn-sm"
+                        onclick="changeBagQuantity(1)">+</button>
+                      <span class="ms-3 fw-bold">$25 each</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3">
+              <button type="button" class="btn btn-outline-primary">
+                <i class="fas fa-save me-2"></i>Save for Later
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-arrow-right me-2"></i>Continue to Seat Selection
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let passengerCount = 1;
+  let bagQuantity = 0;
+
+  // Seat class selection
+  document.querySelectorAll('.seat-class-radio').forEach(radio => {
+    radio.addEventListener('change', function () {
+      updatePricing();
+    });
+  });
+
+  // Same as passenger checkbox
+  document.getElementById('sameAsPassenger').addEventListener('change', function () {
+    const emergencyInputs = document.querySelectorAll('.emergency-section input[type="text"], .emergency-section input[type="email"], .emergency-section input[type="tel"]');
+    const passengerInputs = document.querySelectorAll('.passenger-section input');
+
+    if (this.checked) {
+      emergencyInputs[0].value = passengerInputs[0].value; // Name
+      emergencyInputs[1].value = passengerInputs[5].value; // Phone (if exists)
+      emergencyInputs[2].value = '{{ user.email }}'; // Email
+
+      emergencyInputs.forEach(input => input.disabled = true);
+    } else {
+      emergencyInputs.forEach(input => {
+        input.disabled = false;
+        input.value = '';
+      });
+    }
+  });
+
+  function addPassenger() {
+    passengerCount++;
+    const container = document.getElementById('additionalPassengers');
+
+    const passengerHtml = `
+        <div class="passenger-section mb-4" id="passenger_${passengerCount}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Passenger ${passengerCount}</h6>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removePassenger(${passengerCount})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">First Name *</label>
+                    <input type="text" class="form-control" name="passenger_${passengerCount}_first_name" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Name *</label>
+                    <input type="text" class="form-control" name="passenger_${passengerCount}_last_name" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Date of Birth *</label>
+                    <input type="date" class="form-control" name="passenger_${passengerCount}_dob" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Gender *</label>
+                    <select class="form-control" name="passenger_${passengerCount}_gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Passport Number</label>
+                    <input type="text" class="form-control" name="passenger_${passengerCount}_passport">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Nationality *</label>
+                    <input type="text" class="form-control" name="passenger_${passengerCount}_nationality" required>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', passengerHtml);
+    updatePricing();
+  }
+
+  function removePassenger(id) {
+    document.getElementById(`passenger_${id}`).remove();
+    passengerCount--;
+    updatePricing();
+  }
+
+  function changeBagQuantity(change) {
+    const newQuantity = bagQuantity + change;
+    if (newQuantity >= 0 && newQuantity <= 5) {
+      bagQuantity = newQuantity;
+      document.getElementById('bagQuantity').textContent = bagQuantity;
+      updatePricing();
+    }
+  }
+
+  function updatePricing() {
+    const selectedClass = document.querySelector('input[name="seat_class"]:checked');
+    const basePrice = parseFloat(selectedClass.dataset.price);
+    const taxes = 121;
+    const baggageFee = bagQuantity * 25;
+    const passengersTotal = document.querySelectorAll('.passenger-section').length;
+
+    const subtotal = (basePrice * passengersTotal);
+    const total = subtotal + taxes + baggageFee;
+
+    document.getElementById('baseFare').textContent = `$${subtotal}`;
+    document.getElementById('baggageFee').textContent = `$${baggageFee}`;
+    document.getElementById('totalPrice').textContent = `$${total}`;
+  }
+
+  // Form submission
+  document.getElementById('bookingForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Collect passenger data
+    const passengers = [];
+    document.querySelectorAll('.passenger-section').forEach((section, index) => {
+      const inputs = section.querySelectorAll('input, select');
+      const passenger = {};
+
+      inputs.forEach(input => {
+        const name = input.name.replace(`passenger_${index + 1}_`, '').replace('passenger_', '');
+        if (input.value) {
+          passenger[name] = input.value;
+        }
+      });
+
+      if (Object.keys(passenger).length > 0) {
+        passengers.push(passenger);
+      }
+    });
+
+    // Add passengers data to form
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'passengers_data';
+    hiddenInput.value = JSON.stringify(passengers);
+    this.appendChild(hiddenInput);
+
+    // Update seat class value
+    const selectedClass = document.querySelector('input[name="seat_class"]:checked');
+    document.querySelector('input[name="seat_class"][type="hidden"]').value = selectedClass.value;
+
+    // Submit form
+    this.submit();
+  });
+
+  // Initialize pricing
+  updatePricing();
+</script>
+{% endblock %}

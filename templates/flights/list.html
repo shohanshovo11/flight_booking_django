@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Flights - Trip{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Search Form -->
+  <div class="card shadow-lg border-0 mb-5">
+    <div class="card-body p-4">
+      <h3 class="mb-4">Find Your Perfect Flight</h3>
+      <form method="get">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">From</label>
+            <input type="text" class="form-control" name="departure_city" value="{{ search_params.departure_city }}"
+              placeholder="Departure city" list="citiesList">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">To</label>
+            <input type="text" class="form-control" name="arrival_city" value="{{ search_params.arrival_city }}"
+              placeholder="Arrival city" list="citiesList">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Departure Date</label>
+            <input type="date" class="form-control" name="departure_date" value="{{ search_params.departure_date }}">
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="fas fa-search me-2"></i>Search Flights
+            </button>
+            <a href="{% url 'flights:list' %}" class="btn btn-outline-secondary ms-2">
+              <i class="fas fa-times me-2"></i>Clear Filters
+            </a>
+          </div>
+        </div>
+      </form>
+
+      <!-- Cities datalist -->
+      <datalist id="citiesList">
+        {% for city in cities %}
+        <option value="{{ city }}">
+          {% endfor %}
+      </datalist>
+    </div>
+  </div>
+
+  <!-- Filters and Results -->
+  <div class="row">
+    <!-- Filters Sidebar -->
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5 class="mb-0">Filters</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <h6>Price Range</h6>
+            <div class="row g-2">
+              <div class="col-6">
+                <input type="number" class="form-control form-control-sm" placeholder="Min" id="minPrice">
+              </div>
+              <div class="col-6">
+                <input type="number" class="form-control form-control-sm" placeholder="Max" id="maxPrice">
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h6>Departure Time</h6>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="morning">
+              <label class="form-check-label" for="morning">
+                Morning (6AM - 12PM)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="afternoon">
+              <label class="form-check-label" for="afternoon">
+                Afternoon (12PM - 6PM)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="evening">
+              <label class="form-check-label" for="evening">
+                Evening (6PM - 12AM)
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h6>Airlines</h6>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="airline1">
+              <label class="form-check-label" for="airline1">
+                American Airlines
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="airline2">
+              <label class="form-check-label" for="airline2">
+                Delta Airlines
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="airline3">
+              <label class="form-check-label" for="airline3">
+                United Airlines
+              </label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-100">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flight Results -->
+    <div class="col-md-9">
+      {% if page_obj %}
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Available Flights ({{ page_obj.paginator.count }} results)</h4>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            Sort by: Price
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
+            <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
+            <li><a class="dropdown-item" href="#">Departure Time</a></li>
+            <li><a class="dropdown-item" href="#">Duration</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Flight Cards -->
+      {% for flight in page_obj %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-7">
+              <div class="d-flex align-items-center mb-3">
+                {% if flight.airline.logo %}
+                <img src="{{ flight.airline.logo.url }}" alt="{{ flight.airline.name }}" class="me-3"
+                  style="width: 40px; height: 40px; object-fit: contain;">
+                {% else %}
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                  style="width: 40px; height: 40px;">
+                  <i class="fas fa-plane"></i>
+                </div>
+                {% endif %}
+                <div>
+                  <h5 class="fw-bold mb-0">{{ flight.airline.code }}{{ flight.flight_number }}</h5>
+                  <small class="text-muted">{{ flight.airline.name }}</small>
+                </div>
+              </div>
+
+              <div class="flight-route d-flex align-items-center justify-content-between">
+                <div class="text-center">
+                  <h4 class="fw-bold mb-0">{{ flight.departure_airport.code }}</h4>
+                  <small class="text-muted">{{ flight.departure_time|time:"H:i" }}</small>
+                  <br>
+                  <small class="text-muted">{{ flight.departure_airport.city }}</small>
+                </div>
+                <div class="flex-grow-1 text-center px-3">
+                  <small class="text-muted">{{ flight.duration }}</small>
+                  <br>
+                  <div class="flight-line position-relative">
+                    <hr class="my-1">
+                    <i
+                      class="fas fa-plane position-absolute top-50 start-50 translate-middle bg-white text-primary px-1"></i>
+                  </div>
+                  <small class="text-muted">Non-stop</small>
+                </div>
+                <div class="text-center">
+                  <h4 class="fw-bold mb-0">{{ flight.arrival_airport.code }}</h4>
+                  <small class="text-muted">{{ flight.arrival_time|time:"H:i" }}</small>
+                  <br>
+                  <small class="text-muted">{{ flight.arrival_airport.city }}</small>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <small class="text-muted">
+                  <i class="fas fa-calendar me-1"></i>{{ flight.departure_time|date:"M d, Y" }}
+                  <i class="fas fa-users ms-3 me-1"></i>{{ flight.available_seats }} seats available
+                </small>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="seat-classes">
+                {% for seat_class in flight.seat_classes.all %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge bg-{{ seat_class.class_type|default:'secondary' }}">
+                    {{ seat_class.get_class_type_display }}
+                  </span>
+                  <strong class="text-primary">${{ seat_class.get_price }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="col-md-2 text-end">
+              <div class="text-center">
+                <h4 class="text-primary fw-bold">${{ flight.base_price }}</h4>
+                <small class="text-muted">per person</small>
+              </div>
+              <div class="mt-3">
+                <a href="{% url 'flights:detail' flight.id %}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                  View Details
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'bookings:create' flight.id %}" class="btn btn-primary btn-sm w-100">
+                  Book Now
+                </a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}?next={% url 'bookings:create' flight.id %}"
+                  class="btn btn-primary btn-sm w-100">
+                  Login to Book
+                </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+      <nav aria-label="Flight pagination">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link"
+              href="?page={{ page_obj.previous_page_number }}{% if search_params.departure_city %}&departure_city={{ search_params.departure_city }}{% endif %}{% if search_params.arrival_city %}&arrival_city={{ search_params.arrival_city }}{% endif %}{% if search_params.departure_date %}&departure_date={{ search_params.departure_date }}{% endif %}">Previous</a>
+          </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+          <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+          </li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li class="page-item">
+            <a class="page-link"
+              href="?page={{ num }}{% if search_params.departure_city %}&departure_city={{ search_params.departure_city }}{% endif %}{% if search_params.arrival_city %}&arrival_city={{ search_params.arrival_city }}{% endif %}{% if search_params.departure_date %}&departure_date={{ search_params.departure_date }}{% endif %}">{{ num }}</a>
+          </li>
+          {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link"
+              href="?page={{ page_obj.next_page_number }}{% if search_params.departure_city %}&departure_city={{ search_params.departure_city }}{% endif %}{% if search_params.arrival_city %}&arrival_city={{ search_params.arrival_city }}{% endif %}{% if search_params.departure_date %}&departure_date={{ search_params.departure_date }}{% endif %}">Next</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fas fa-plane fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No flights found</h4>
+        <p class="text-muted">Try adjusting your search criteria or browse all available flights.</p>
+        <a href="{% url 'flights:list' %}" class="btn btn-primary">Browse All Flights</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .flight-line {
+    height: 2px;
+  }
+
+  .badge.bg-economy {
+    background-color: #6c757d !important;
+  }
+
+  .badge.bg-premium_economy {
+    background-color: #fd7e14 !important;
+  }
+
+  .badge.bg-business {
+    background-color: #6f42c1 !important;
+  }
+
+  .badge.bg-first {
+    background-color: #dc3545 !important;
+  }
+
+  .card {
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+  }
+</style>
+{% endblock %}

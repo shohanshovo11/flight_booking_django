@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.py.class
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+env.bak/
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+# Static files
+staticfiles/
+static/
+collected_static/
+
+# VSCode settings
+.vscode/
+
+# Mac & Windows system files
+.DS_Store
+Thumbs.db
+
+# Migrations (optional – only if you don’t want to commit them early)
+# **Usually keep migrations in version control**
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Pytest / test cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/

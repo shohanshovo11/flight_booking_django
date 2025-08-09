@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - Trip{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Bookings</h2>
+    <a href="{% url 'flights:list' %}" class="btn btn-primary">
+      <i class="fas fa-plus me-2"></i>Book New Flight
+    </a>
+  </div>
+
+  {% if bookings %}
+  <div class="row g-4">
+    {% for booking in bookings %}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <div class="d-flex align-items-center mb-2">
+                <span
+                  class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% else %}secondary{% endif %} me-3">
+                  {{ booking.get_status_display }}
+                </span>
+                <h5 class="mb-0">Booking #{{ booking.booking_reference }}</h5>
+              </div>
+
+              <div class="flight-info">
+                <h6 class="fw-bold text-primary">
+                  {{ booking.flight.departure_airport.code }} → {{ booking.flight.arrival_airport.code }}
+                </h6>
+                <p class="text-muted mb-1">
+                  {{ booking.flight.airline.name }} • Flight
+                  {{ booking.flight.airline.code }}{{ booking.flight.flight_number }}
+                </p>
+                <div class="d-flex gap-4">
+                  <small class="text-muted">
+                    <i class="fas fa-calendar me-1"></i>{{ booking.flight.departure_time|date:"M d, Y" }}
+                  </small>
+                  <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>{{ booking.flight.departure_time|time:"H:i" }}
+                  </small>
+                  <small class="text-muted">
+                    <i class="fas fa-users me-1"></i>{{ booking.passengers.count }}
+                    passenger{{ booking.passengers.count|pluralize }}
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-2 text-center">
+              <h4 class="text-primary fw-bold">${{ booking.total_amount }}</h4>
+              <small class="text-muted">Total Paid</small>
+            </div>
+
+            <div class="col-md-2 text-end">
+              <a href="{% url 'bookings:detail' booking.id %}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                View Details
+              </a>
+              {% if booking.status == 'confirmed' %}
+              <button class="btn btn-outline-secondary btn-sm w-100 mb-2" disabled>
+                <i class="fas fa-check me-1"></i>Confirmed
+              </button>
+              {% elif booking.status == 'pending' %}
+              <a href="{% url 'bookings:cancel' booking.id %}" class="btn btn-outline-danger btn-sm w-100"
+                onclick="return confirm('Are you sure you want to cancel this booking?')">
+                Cancel Booking
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="fas fa-plane fa-3x text-muted mb-3"></i>
+    <h4 class="text-muted">No bookings yet</h4>
+    <p class="text-muted">Start your journey by booking your first flight!</p>
+    <a href="{% url 'flights:list' %}" class="btn btn-primary btn-lg">
+      <i class="fas fa-search me-2"></i>Search Flights
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

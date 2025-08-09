@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trip - It's more than just a trip{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">It's more than<br>just a <span
+            style="background: linear-gradient(45deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">trip</span>
+        </h1>
+        <p class="lead mb-4">Discover amazing places around the world and book your perfect flight experience.</p>
+      </div>
+      <div class="col-lg-6">
+        <!-- Flight Search Form -->
+        <div class="card shadow-lg">
+          <div class="card-body p-4">
+            <h4 class="card-title text-dark mb-4">Search Flights</h4>
+            <form action="{% url 'flights:search' %}" method="post" id="searchForm">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-dark">From</label>
+                  <input type="text" class="form-control" name="departure_city" placeholder="🔍 Where from?" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-dark">To</label>
+                  <input type="text" class="form-control" name="arrival_city" placeholder="🔍 Where to?" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-dark">Departure</label>
+                  <input type="date" class="form-control" name="departure_date" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-dark">Passengers</label>
+                  <select class="form-control" name="passengers">
+                    <option value="1">1 Passenger</option>
+                    <option value="2">2 Passengers</option>
+                    <option value="3">3 Passengers</option>
+                    <option value="4">4 Passengers</option>
+                    <option value="5">5+ Passengers</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="fas fa-search me-2"></i>Search Flights
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular Destinations -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold">Find your next adventure with these flight deals</h2>
+      <p class="lead text-muted">Discover amazing places around the world</p>
+    </div>
+
+    <div class="row g-4">
+      {% for destination in popular_destinations %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100">
+          <div class="card-img-top position-relative"
+            style="height: 250px; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'assets/images/image_1.png' %}'); background-size: cover; background-position: center;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ destination.city }}, {{ destination.country }}</h5>
+            <p class="card-text text-muted">{{ destination.name }}</p>
+            <p class="card-text fw-bold text-primary">From $299</p>
+            <a href="{% url 'flights:list' %}?arrival_city={{ destination.city }}" class="btn btn-outline-primary">View
+              Flights</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100">
+          <div class="card-img-top position-relative"
+            style="height: 250px; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'assets/images/image_1.png' %}'); background-size: cover; background-position: center;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Mumbai, Maharashtra</h5>
+            <p class="card-text text-muted">The city that never sleeps</p>
+            <p class="card-text fw-bold text-primary">From $299</p>
+            <a href="{% url 'flights:list' %}" class="btn btn-outline-primary">View Flights</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100">
+          <div class="card-img-top position-relative"
+            style="height: 250px; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'assets/images/image_2.png' %}'); background-size: cover; background-position: center;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Sydney, New South Wales</h5>
+            <p class="card-text text-muted">Iconic harbor and beaches</p>
+            <p class="card-text fw-bold text-primary">From $799</p>
+            <a href="{% url 'flights:list' %}" class="btn btn-outline-primary">View Flights</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100">
+          <div class="card-img-top position-relative"
+            style="height: 250px; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'assets/images/image_3.png' %}'); background-size: cover; background-position: center;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Kyoto, Japan</h5>
+            <p class="card-text text-muted">Ancient temples and culture</p>
+            <p class="card-text fw-bold text-primary">From $899</p>
+            <a href="{% url 'flights:list' %}" class="btn btn-outline-primary">View Flights</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Banner -->
+<section class="py-5 bg-gradient"
+  style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+  <div class="container">
+    <div class="row align-items-center text-white">
+      <div class="col-md-8">
+        <span class="badge bg-warning text-dark mb-2">Best Deal</span>
+        <h3 class="fw-bold mb-2">African Safari Adventure</h3>
+        <p class="mb-0">Experience the wild like never before</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{% url 'flights:list' %}" class="btn btn-light btn-lg">Explore Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Activities Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold">Explore unique experiences</h2>
+      <p class="lead text-muted">Create memories that last a lifetime</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card h-100 border-0">
+          <div class="card-img-top"
+            style="height: 300px; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'assets/images/image_4.png' %}'); background-size: cover; background-position: center; border-radius: 8px;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title fw-bold">Luxury Beach Resorts</h5>
+            <p class="card-text text-muted">Relax and unwind at the world's most beautiful beach destinations with
+              luxury accommodations and pristine waters.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card h-100 border-0">
+          <div class="card-img-top"
+            style="height: 300px; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'assets/images/image_5.png' %}'); background-size: cover; background-position: center; border-radius: 8px;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title fw-bold">Cultural City Tours</h5>
+            <p class="card-text text-muted">Immerse yourself in local culture and history with guided tours through the
+              world's most fascinating cities.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card h-100 border-0">
+          <div class="card-img-top"
+            style="height: 300px; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'assets/images/image_6.png' %}'); background-size: cover; background-position: center; border-radius: 8px;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title fw-bold">Mountain Adventures</h5>
+            <p class="card-text text-muted">Challenge yourself with breathtaking mountain expeditions and outdoor
+              activities in stunning natural landscapes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold">What Our Users Are Saying</h2>
+      <p class="lead text-muted">Real experiences from real travelers</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4">
+            <div class="text-warning mb-3">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="card-text">"Amazing service! Trip made planning my vacation so easy. The recommendations were spot
+              on and I had the time of my life exploring new destinations."</p>
+            <div class="d-flex align-items-center mt-3">
+              <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                style="width: 50px; height: 50px;">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="mb-0">Sarah Johnson</h6>
+                <small class="text-muted">Travel Enthusiast</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4">
+            <div class="text-warning mb-3">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="card-text">"I've used many travel apps, but Trip stands out. The user interface is beautiful and
+              the deals are unbeatable. Highly recommend!"</p>
+            <div class="d-flex align-items-center mt-3">
+              <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                style="width: 50px; height: 50px;">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="mb-0">Michael Chen</h6>
+                <small class="text-muted">Digital Nomad</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4">
+            <div class="text-warning mb-3">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="card-text">"Trip helped me discover places I never knew existed. The personalized suggestions were
+              perfect for my travel style and budget."</p>
+            <div class="d-flex align-items-center mt-3">
+              <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center"
+                style="width: 50px; height: 50px;">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="mb-0">Emma Rodriguez</h6>
+                <small class="text-muted">Adventure Seeker</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('searchForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+
+    fetch('{% url "flights:search" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.flights && data.flights.length > 0) {
+          // Redirect to flights list with search results
+          const params = new URLSearchParams(formData);
+          window.location.href = '{% url "flights:list" %}?' + params.toString();
+        } else {
+          alert('No flights found for your search criteria. Please try different dates or destinations.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while searching for flights. Please try again.');
+      });
+  });
+
+  // Set today as minimum date for departure
+  document.querySelector('input[name="departure_date"]').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}
